@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note } from './entities/note.entity';
+import { _getRandomInt } from 'src/app.utils';
 
 @Injectable()
 export class NotesService {
   private _notes: Note[] = [];
 
   create(createNoteDto: CreateNoteDto) {
-    const id: number = this._getRandomInt();
+    const id: number = _getRandomInt();
     const note: Note = new Note(
       id,
       createNoteDto.name,
@@ -37,7 +38,7 @@ export class NotesService {
     return `This action removes a #${id} note`;
   }
 
-  private _getRandomInt(): number {
-    return Math.floor(Math.random() * 100);
-  }
+  // private _getRandomInt(): number {
+  //   return Math.floor(Math.random() * 100);
+  // }
 }
