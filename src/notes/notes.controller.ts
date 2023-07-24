@@ -7,10 +7,8 @@ import {
   Param,
   Delete,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
 import {
   ApiOperation,
   ApiParam,
@@ -19,14 +17,21 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { NotesService } from './notes.service';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
+
 import { Note } from './entities/note.entity';
 
 @ApiTags('Notes')
+@ApiSecurity('X-API-KEY', ['X-API-KEY']) // INFO: <<< авторизация через swagger
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post('create')
+  @UseGuards(AuthGuard('api-key')) // INFO: Если не авторизован, то вернет 401
   @ApiOperation({ summary: 'Creates a new note for the user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
@@ -36,6 +41,7 @@ export class NotesController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'get all notes of all users' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
@@ -45,6 +51,7 @@ export class NotesController {
   }
 
   @Get(':noteId')
+  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'get note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
@@ -55,6 +62,7 @@ export class NotesController {
   }
 
   @Patch(':noteId')
+  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'update note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
@@ -65,6 +73,7 @@ export class NotesController {
   }
 
   @Delete(':noteId')
+  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'delete note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
