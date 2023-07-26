@@ -23,25 +23,17 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 
 import { Note } from './entities/note.entity';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { UsersService } from '@/users/users.service';
 
 @ApiTags('Notes')
-@ApiSecurity('X-API-KEY', ['X-API-KEY']) // INFO: <<< авторизация через swagger
 @Controller('notes')
+@UseGuards(AuthGuard('jwt'))
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
-  @Post('create')
-  @UseGuards(AuthGuard('api-key')) // INFO: Если не авторизован, то вернет 401
-  @ApiOperation({ summary: 'Creates a new note for the user' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.notesService.create(createNoteDto);
-  }
-
   @Get()
-  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'get all notes of all users' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
@@ -51,7 +43,6 @@ export class NotesController {
   }
 
   @Get(':noteId')
-  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'get note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
@@ -61,8 +52,16 @@ export class NotesController {
     return this.notesService.findOne(+id);
   }
 
+  @Post('create')
+  @ApiOperation({ summary: 'Creates a new note for the user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  create(@Body() createNoteDto: CreateNoteDto) {
+    return this.notesService.create(createNoteDto);
+  }
+
   @Patch(':noteId')
-  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'update note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
@@ -73,7 +72,6 @@ export class NotesController {
   }
 
   @Delete(':noteId')
-  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({ summary: 'delete note of user' })
   @ApiParam({ name: 'noteId', required: true, description: 'Note identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })

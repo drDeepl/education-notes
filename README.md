@@ -1,3 +1,7 @@
+## Schema of database
+
+![info/education_note_schema_db.png]
+
 ## Installation
 
 ```bash

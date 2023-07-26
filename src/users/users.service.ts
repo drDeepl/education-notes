@@ -8,11 +8,15 @@ export class UsersService {
       id: _getRandomInt(),
       username: 'admin',
       password: 'admin',
-      datetimeRegister: '2023-24-07',
+      datetimeSignUp: 1690352179,
       role: 'admin',
     },
   ];
 
+  createUser(user: User) {
+    this.users.push(user);
+    return user;
+  }
   findAllUsers() {
     return this.users;
   }
