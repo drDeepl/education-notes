@@ -25,6 +25,8 @@ import { SignInDto } from './dto/signIn.dto';
 import { SignUpDto } from './dto/signUp.dto';
 import { UserDto } from '@/users/dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { Tokens } from './types';
+import { TokensDto } from './dto/tokens.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -42,21 +44,20 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  signIn(@Body() dto: SignInDto) {
+  signIn(@Body() dto: SignInDto): Promise<Tokens> {
     return this.authService.signIn(dto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('signup')
   @ApiOperation({ summary: 'response to validate data for sign up' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Success',
-    type: SignUpDto,
+    type: TokensDto,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  signUp(@Body() dto: SignUpDto) {
+  signUp(@Body() dto: SignUpDto): Promise<Tokens> {
     return this.authService.signUp(dto);
   }
 
