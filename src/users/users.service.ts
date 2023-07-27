@@ -26,11 +26,22 @@ export class UsersService {
   async findUser(userId: number): Promise<User | undefined> {
     return this.users.find((user) => user.id == userId);
   }
-  async updateUser(user: User) {
-    this.users.push(user);
+  async updateUserRefreshToken(user: User) {
+    this.users.map((userArray) =>
+      userArray.id === user.id
+        ? (userArray.refreshTokenHash = user.refreshTokenHash)
+        : '',
+    );
   }
 
   async findUserByName(username: string): Promise<User> {
     return this.users.find((user) => user.username == username);
+  }
+
+  async clearRefreshTokenHash(userId: number): Promise<User> {
+    const user: User = await this.findUser(userId);
+    user.refreshTokenHash = null;
+    await this.updateUserRefreshToken(user);
+    return user;
   }
 }

@@ -60,7 +60,7 @@ export class AuthService {
     const hashData: string = await this.hashData(refreshToken);
     const user: User = await this.usersService.findUser(userId);
     user.refreshTokenHash = hashData;
-    await this.usersService.updateUser(user);
+    await this.usersService.updateUserRefreshToken(user);
   }
   async signIn(dto: SignInDto): Promise<Tokens> {
     const user: User = await this.usersService.findUserByName(dto.username);
@@ -77,5 +77,9 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.username);
     this.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;
+  }
+
+  async logout(userId: number): Promise<User> {
+    return await this.usersService.clearRefreshTokenHash(userId);
   }
 }

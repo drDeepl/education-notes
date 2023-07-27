@@ -11,6 +11,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Req,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -20,6 +21,7 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.dto';
 import { SignUpDto } from './dto/signUp.dto';
@@ -34,7 +36,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  // @UseGuards(AuthGuard('api-key'))
   @Post('signin')
   @ApiOperation({ summary: 'response to validate data for sign in' })
   @ApiResponse({
@@ -49,10 +50,11 @@ export class AuthController {
   }
 
   @Post('signup')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'response to validate data for sign up' })
   @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Success',
+    status: HttpStatus.CREATED,
+    description: 'Created',
     type: TokensDto,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
@@ -61,6 +63,7 @@ export class AuthController {
     return this.authService.signUp(dto);
   }
 
+  @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   @ApiOperation({ summary: 'response to update access token' })
@@ -73,5 +76,20 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   refresh() {
     return true;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @Post('logout')
+  @ApiOperation({ summary: 'response to clear refreshTokenHash' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Success',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  logout(@Req() req: Request) {
+    const user = req.user;
+    this.authService.logout(user['sub']);
   }
 }

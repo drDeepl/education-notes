@@ -20,7 +20,9 @@ import {
 
 import { UsersService } from './users.service';
 import { User } from './entites/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
