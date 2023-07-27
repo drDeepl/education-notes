@@ -18,7 +18,6 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   private readonly logger = new Logger('AUTH.SERVICE');
   constructor(
-    private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private prisma: PrismaService,
@@ -78,7 +77,7 @@ export class AuthService {
 
   async signIn(dto: SignInDto): Promise<Tokens> {
     this.logger.verbose('signIn');
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         username: dto.username,
       },
@@ -113,7 +112,7 @@ export class AuthService {
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
     this.logger.verbose('refreshTokens');
 
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
