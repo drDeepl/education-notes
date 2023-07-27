@@ -1,28 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class User {
+  @ApiProperty({ nullable: false })
   id: number;
-  @ApiProperty({ description: 'Users username', nullable: false })
+  @ApiProperty({ nullable: false })
   username: string;
-  @ApiProperty({ description: 'Users role', nullable: false })
+  @ApiProperty({ nullable: false })
   role: string;
-  @ApiProperty({ description: 'Users password', nullable: false })
+  @ApiProperty({ nullable: false })
   passwordHash: string;
-  @ApiProperty({ description: 'User data of register', nullable: false })
-  createdAt: number;
-  @ApiProperty({ description: 'Users refresh token hash', nullable: false })
+  @ApiProperty({ nullable: false })
+  createdAt: Date;
+  @ApiProperty({ nullable: false })
   refreshTokenHash: string;
 
   constructor(
     username: string,
     passwordHash: string,
-    datetimeSignUp: number,
+    createdAt: Date,
     role: string = 'user',
     refreshTokenHash: string = '',
   ) {
     this.username = username;
     this.passwordHash = passwordHash;
-    this.createdAt = datetimeSignUp;
+    this.createdAt = createdAt;
     this.role = role;
     this.refreshTokenHash = refreshTokenHash;
   }

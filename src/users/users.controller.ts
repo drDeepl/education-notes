@@ -33,11 +33,11 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'get all users' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: User })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: [User] })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  findAll() {
+  findAll(): Promise<User[]> {
     this.logger.verbose('users.controller: users findAll');
-    return this.usersService.findAllUsers();
+    return this.usersService.findUsers();
   }
 }

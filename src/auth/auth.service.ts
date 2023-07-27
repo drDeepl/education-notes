@@ -136,8 +136,6 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user.id, user.username);
-    console.log(`OLD REFRESH: ${refreshToken}`);
-    console.log(`NEW REFRESH: ${tokens.refresh_token}`);
     this.updateHashRefreshToken(userId, tokens.refresh_token);
     return tokens;
   }
