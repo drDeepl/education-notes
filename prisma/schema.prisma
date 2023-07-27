@@ -9,3 +9,29 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+
+model User{
+  id Int @id @default(autoincrement())
+  username String @db.VarChar(255) @unique
+  role String @db.VarChar(10)
+  passwordHash String @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  refreshTokenHash String?  @db.VarChar(255) 
+  notes Note[]
+  @@map(name: "users")
+}
+
+model Note{
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  description String @db.VarChar(255)
+  content String?
+  published Boolean @default(false)
+  authorId Int
+  User User @relation(fields:[authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@map(name: "notes")
+}
+
+

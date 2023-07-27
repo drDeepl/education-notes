@@ -6,10 +6,10 @@ import { _getRandomInt } from '@/app.utils';
 export class UsersService {
   private readonly users: User[] = [
     {
-      id: _getRandomInt(),
+      id: 11,
       username: 'admin',
       passwordHash: 'admin',
-      datetimeSignUp: 1690352179,
+      createdAt: 1690352179,
       role: 'admin',
       refreshTokenHash: 'awdwadwdaw',
     },
@@ -26,16 +26,15 @@ export class UsersService {
   async findUser(userId: number): Promise<User | undefined> {
     return this.users.find((user) => user.id == userId);
   }
+  async findUserByName(username: string): Promise<User> {
+    return this.users.find((user) => user.username == username);
+  }
   async updateUserRefreshToken(user: User) {
     this.users.map((userArray) =>
       userArray.id === user.id
         ? (userArray.refreshTokenHash = user.refreshTokenHash)
         : '',
     );
-  }
-
-  async findUserByName(username: string): Promise<User> {
-    return this.users.find((user) => user.username == username);
   }
 
   async clearRefreshTokenHash(userId: number): Promise<User> {

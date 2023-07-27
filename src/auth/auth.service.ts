@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SignUpDto } from './dto/signUp.dto';
@@ -20,6 +21,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private prisma: PrismaService,
   ) {}
 
   hashData(data: string): Promise<string> {
@@ -49,26 +51,38 @@ export class AuthService {
     return { access_token: accessToken, refresh_token: refreshToken };
   }
 
+  async updateHashRefreshToken(userId: number, refreshToken: string) {
+    this.logger.verbose('updateRefreshToken');
+    const hashData: string = await this.hashData(refreshToken);
+
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshTokenHash: hashData,
+      },
+    });
+  }
+
   async signUp(dto: SignUpDto): Promise<Tokens> {
     this.logger.verbose('signUp');
     const hashData = await this.hashData(dto.password);
-    const newUser: User = new User(dto.username, hashData, Date.now());
-    const user = await this.usersService.createUser(newUser);
-    const tokens = await this.getTokens(user.id, user.username);
-    this.updateRefreshToken(user.id, tokens.refresh_token);
+    const newUser = await this.prisma.user.create({
+      data: { username: dto.username, passwordHash: hashData, role: 'user' },
+    });
+    const tokens = await this.getTokens(newUser.id, newUser.username);
+    this.updateHashRefreshToken(newUser.id, tokens.refresh_token);
     return tokens;
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string) {
-    this.logger.verbose('updateRefreshToken');
-    const hashData: string = await this.hashData(refreshToken);
-    const user: User = await this.usersService.findUser(userId);
-    user.refreshTokenHash = hashData;
-    await this.usersService.updateUserRefreshToken(user);
-  }
   async signIn(dto: SignInDto): Promise<Tokens> {
     this.logger.verbose('signIn');
-    const user: User = await this.usersService.findUserByName(dto.username);
+    const user = await this.prisma.user.findFirst({
+      where: {
+        username: dto.username,
+      },
+    });
     if (!user) {
       throw new ForbiddenException('Access Denied');
     }
@@ -80,23 +94,40 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     }
     const tokens = await this.getTokens(user.id, user.username);
-    this.updateRefreshToken(user.id, tokens.refresh_token);
+    this.updateHashRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }
 
-  async logout(userId: number): Promise<User> {
+  async logout(userId: number) {
     this.logger.verbose('logout');
-    return await this.usersService.clearRefreshTokenHash(userId);
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshTokenHash: null,
+      },
+    });
   }
+
   async refreshTokens(userId: number, refreshToken: string): Promise<Tokens> {
     this.logger.verbose('refreshTokens');
-    const user: User = await this.usersService.findUser(userId);
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
     console.log(user);
     if (!user) {
       throw new ForbiddenException('Access Denided');
     }
 
-    const comparedRefreshToken = bcrypt.compare(
+    if (!user.refreshTokenHash) {
+      throw new ForbiddenException('Refresh token is empty');
+    }
+
+    const comparedRefreshToken = await bcrypt.compare(
       refreshToken,
       user.refreshTokenHash,
     );
@@ -107,7 +138,7 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.username);
     console.log(`OLD REFRESH: ${refreshToken}`);
     console.log(`NEW REFRESH: ${tokens.refresh_token}`);
-    this.updateRefreshToken(userId, tokens.refresh_token);
+    this.updateHashRefreshToken(userId, tokens.refresh_token);
     return tokens;
   }
 }

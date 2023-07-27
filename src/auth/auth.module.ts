@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AccessTokenStrategy } from './strategies/access.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh.strategy';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 const jwtFactory = {
   useFactory: async (configService: ConfigService) => ({
@@ -19,6 +20,7 @@ const jwtFactory = {
 
 @Module({
   imports: [
+    PrismaModule,
     PassportModule,
     JwtModule.registerAsync(jwtFactory),
     PassportModule.register({ defaultStrategy: 'jwt' }),
