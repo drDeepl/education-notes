@@ -12,6 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
   Req,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -33,6 +34,7 @@ import { TokensDto } from './dto/tokens.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger('AUTH.CONTROLLER');
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
@@ -46,6 +48,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   signIn(@Body() dto: SignInDto): Promise<Tokens> {
+    this.logger.log('auth.controller: signIn');
     return this.authService.signIn(dto);
   }
 
@@ -63,24 +66,23 @@ export class AuthController {
     return this.authService.signUp(dto);
   }
 
-  @UseGuards(AuthGuard('jwt-refresh'))
-  @HttpCode(HttpStatus.OK)
-  @Post('refresh')
   @ApiOperation({ summary: 'response to update access token' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Success',
-    type: UserDto,
+    type: TokensDto,
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  refresh() {
-    return true;
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  refresh(@Req() req: Request) {
+    this.logger.verbose('refresh');
+    const user = req.user;
+    return this.authService.refreshTokens(user['sub'], user['refreshToken']);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @HttpCode(HttpStatus.OK)
-  @Post('logout')
   @ApiOperation({ summary: 'response to clear refreshTokenHash' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -88,7 +90,11 @@ export class AuthController {
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
   logout(@Req() req: Request) {
+    this.logger.verbose('logout');
     const user = req.user;
     this.authService.logout(user['sub']);
   }

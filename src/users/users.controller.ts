@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Logger,
   Post,
   Body,
   Patch,
@@ -26,6 +27,8 @@ import { AuthGuard } from '@nestjs/passport';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger();
+
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
@@ -34,6 +37,7 @@ export class UsersController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   findAll() {
+    this.logger.log('users.controller: users findAll');
     return this.usersService.findAllUsers();
   }
 }
