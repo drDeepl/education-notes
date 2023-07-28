@@ -5,13 +5,13 @@ export class CreateNoteDto {
   @ApiProperty({ description: 'Note content', nullable: false })
   content: string;
   @ApiProperty({ description: 'Note author', nullable: false })
-  author: number;
+  authorId: number;
   @ApiProperty({
     description: 'Note flag to published',
     nullable: false,
     default: false,
   })
-  isPublished: boolean;
+  published: boolean;
   @ApiProperty({ description: 'Note description', nullable: false })
   description: string;
 }

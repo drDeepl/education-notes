@@ -1,13 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Injectable,
-  Logger,
-  HttpStatus,
-  HttpException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpStatus, HttpException } from '@nestjs/common';
 import { User } from './entites/user.entity';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersService {

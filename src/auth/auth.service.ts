@@ -4,13 +4,11 @@ import {
   ForbiddenException,
   Logger,
 } from '@nestjs/common';
-import { UsersService } from '@/users/users.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SignUpDto } from './dto/signUp.dto';
 import { SignInDto } from './dto/signIn.dto';
-import { User } from '@/users/entites/user.entity';
 import { Tokens } from './types';
 import * as bcrypt from 'bcrypt';
 
@@ -34,7 +32,10 @@ export class AuthService {
           sub: userId,
           username,
         },
-        { secret: this.configService.get('JWT_SECRET'), expiresIn: 60 * 5 },
+        {
+          secret: this.configService.get('JWT_SECRET'),
+          expiresIn: this.configService.get('JWT_ACCESS_EXP'),
+        },
       ),
       this.jwtService.signAsync(
         {

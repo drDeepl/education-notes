@@ -1,4 +1,13 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateNoteDto } from './create-note.dto';
-
-export class UpdateNoteDto extends PartialType(CreateNoteDto) {}
+import { ApiProperty } from '@nestjs/swagger';
+export class UpdateNoteDto {
+  @ApiProperty({ nullable: false })
+  name: string;
+  @ApiProperty({ nullable: false })
+  description: string;
+  @ApiProperty({ nullable: false })
+  content: string;
+  @ApiProperty({ nullable: false, default: false })
+  published: boolean;
+  @ApiProperty({ nullable: false })
+  authorId: number;
+}

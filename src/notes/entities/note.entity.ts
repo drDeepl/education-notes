@@ -7,9 +7,13 @@ export class Note {
   @ApiProperty({ description: 'Note content', nullable: false })
   content: string;
   @ApiProperty({ description: 'Note author', nullable: false })
-  author: number;
-  @ApiProperty({ description: 'Note flag to published', nullable: false })
-  isPublished: boolean;
+  authorId: number;
+  @ApiProperty({
+    description: 'Note flag to published',
+    nullable: false,
+    default: false,
+  })
+  published: boolean;
   @ApiProperty({ description: 'Note description', nullable: false })
   description: string;
 
@@ -17,15 +21,15 @@ export class Note {
     id: number,
     name: string,
     content: string,
-    author: number,
-    isPublished: boolean = false,
+    authorId: number,
+    published: boolean = false,
     description: string = '',
   ) {
     this.id = id;
     this.name = name;
     this.content = content;
-    this.author = author;
-    this.isPublished = isPublished;
+    this.authorId = authorId;
+    this.published = published;
     this.description = description;
   }
 }
