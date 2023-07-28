@@ -1,6 +1,7 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, Logger, HttpStatus, HttpException } from '@nestjs/common';
 import { User } from './entites/user.entity';
+import { Role } from './types';
 
 @Injectable()
 export class UsersService {
@@ -45,5 +46,15 @@ export class UsersService {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  async findRoles(): Promise<string[]> {
+    this.logger.verbose('findUsers');
+    const roles: Role[] = await this.prisma.role.findMany();
+    const titleRoles: string[] = roles.map((role) => role.role);
+    return titleRoles;
+  }
+  async addRole(role: string): Promise<Role> {
+    return await this.prisma.role.create({ data: { role: role } });
   }
 }

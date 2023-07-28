@@ -4,7 +4,6 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note } from './entities/note.entity';
 import { _getRandomInt } from '@/app.utils';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Not } from 'typeorm';
 
 @Injectable()
 export class NotesService {

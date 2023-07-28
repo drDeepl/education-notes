@@ -34,4 +34,10 @@ model Note{
   @@map(name: "notes")
 }
 
+model Role{
+  id Int @id @default(autoincrement())
+  role String @db.VarChar(32) @default("USER")
+  @@map(name: "roles")
+}
+
 
