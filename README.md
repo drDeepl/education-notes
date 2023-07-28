@@ -1,6 +1,6 @@
 ## Schema of database
 
-![schema db](/info/education_note_schema_db.png 'schema')
+!(/info/education_note_schema_db.png 'schema')
 
 ## Installation
 
