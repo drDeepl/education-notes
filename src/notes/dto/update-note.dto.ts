@@ -8,6 +8,8 @@ export class UpdateNoteDto {
   content: string;
   @ApiProperty({ nullable: false, default: false })
   published: boolean;
+  @ApiProperty({ nullable: false, default: false })
+  isFavorite: boolean;
   @ApiProperty({ nullable: false })
   authorId: number;
 }

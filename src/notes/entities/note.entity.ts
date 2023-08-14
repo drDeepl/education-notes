@@ -14,6 +14,12 @@ export class Note {
     default: false,
   })
   published: boolean;
+  @ApiProperty({
+    description: 'Note flag is favorite',
+    nullable: false,
+    default: false,
+  })
+  isFavorite: boolean;
   @ApiProperty({ description: 'Note description', nullable: false })
   description: string;
 
@@ -23,6 +29,7 @@ export class Note {
     content: string,
     authorId: number,
     published: boolean = false,
+    isFavorite: boolean = false,
     description: string = '',
   ) {
     this.id = id;
@@ -30,6 +37,7 @@ export class Note {
     this.content = content;
     this.authorId = authorId;
     this.published = published;
+    this.isFavorite = isFavorite;
     this.description = description;
   }
 }

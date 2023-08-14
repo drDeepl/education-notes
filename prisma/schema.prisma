@@ -29,6 +29,7 @@ model Note{
   description String @db.VarChar(255)
   content String?
   published Boolean @default(false)
+  isFavorite Boolean @default(false)
   authorId Int
   User User @relation(fields:[authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@map(name: "notes")
