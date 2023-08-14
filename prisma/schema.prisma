@@ -30,10 +30,18 @@ model Note{
   content String?
   published Boolean @default(false)
   isFavorite Boolean @default(false)
-  rating Float @default(0.0)
+  rating Float @db.DoublePrecision() @default(0.0)
   authorId Int
   User User @relation(fields:[authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  imgs Image[]
   @@map(name: "notes")
+}
+
+model Image{
+  id Int @id @default(autoincrement())
+  noteId Int
+  imgPath String @db.VarChar(255)
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Role{
