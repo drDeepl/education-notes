@@ -30,6 +30,7 @@ model Note{
   content String?
   published Boolean @default(false)
   isFavorite Boolean @default(false)
+  rating Float @default(0.0)
   authorId Int
   User User @relation(fields:[authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   @@map(name: "notes")

@@ -20,6 +20,12 @@ export class Note {
     default: false,
   })
   isFavorite: boolean;
+  @ApiProperty({
+    description: 'Note rating',
+    nullable: false,
+    default: 0.0,
+  })
+  rating: number;
   @ApiProperty({ description: 'Note description', nullable: false })
   description: string;
 
@@ -30,6 +36,7 @@ export class Note {
     authorId: number,
     published: boolean = false,
     isFavorite: boolean = false,
+    rating: number = 0.0,
     description: string = '',
   ) {
     this.id = id;
@@ -38,6 +45,7 @@ export class Note {
     this.authorId = authorId;
     this.published = published;
     this.isFavorite = isFavorite;
+    this.rating = rating;
     this.description = description;
   }
 }
